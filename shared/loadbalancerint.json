@@ -121,7 +121,16 @@
                 ],
                 "probes": [
                     {
-                        "name": "[variables('probeName')]",
+                        "name": "[variables('IntprobeName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 3128,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    },
+			{
+                        "name": "[variables('ExtprobeName')]",
                         "properties": {
                             "protocol": "Tcp",
                             "port": 3128,
