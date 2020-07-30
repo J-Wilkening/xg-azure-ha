@@ -152,7 +152,7 @@
             "type": "string"
         },
         "lbIntBackendID": {
-            "value": "[variables('lIntbBackendID')]",
+            "value": "[variables('lbIntBackendID')]",
             "type": "string"
         },
 	    "lbExtFrontendID": {
