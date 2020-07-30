@@ -409,7 +409,7 @@
                     "privateIPInt": {
                         "value": "[parameters('LoadbalancerIntIP')]"
                     },
-		    "privateIPInt": {
+		    "privateIPExt": {
                         "value": "[parameters('LoadbalancerExtIP')]"
                     },
                     "loadBalancerName": {
@@ -454,7 +454,6 @@
                 }
             }
         },
-        ,
         {
             "name": "[concat('SettingUpInterfaceLan', copyIndex())]",
             "type": "Microsoft.Resources/deployments",
