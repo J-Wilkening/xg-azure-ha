@@ -79,7 +79,7 @@
                 ],
                 "loadBalancingRules": [
                     {
-                        "name": "AnyTCPUDP",
+                        "name": "lb-rule-int",
                         "properties": {
                             "frontendIPConfiguration": {
                                 "id": "[variables('lbIntFrontendID')]"
@@ -99,7 +99,7 @@
                         }
                     },
 			{
-                        "name": "AnyTCPUDP",
+                        "name": "lb-rule-ext",
                         "properties": {
                             "frontendIPConfiguration": {
                                 "id": "[variables('lbExtFrontendID')]"
