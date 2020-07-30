@@ -31,7 +31,7 @@
         "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerName'))]",
         "lbIntFrontendID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbIntFrontendName'))]",
         "lbIntBackendID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbIntBackendName'))]",
-        "lbIntProbeID": "[concat(variables('lbID'),'/probes/',variables('IntprobeName'))]"
+        "lbIntProbeID": "[concat(variables('lbID'),'/probes/',variables('IntprobeName'))]",
 	"lbExtFrontendID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbExtFrontendName'))]",
         "lbExtBackendID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbExtBackendName'))]",
         "lbExtProbeID": "[concat(variables('lbID'),'/probes/',variables('ExtprobeName'))]" 
