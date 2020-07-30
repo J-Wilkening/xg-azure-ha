@@ -2,12 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subnetRef": {
+        "subnetIntRef": {
             "type": "string"
         },
-		"privateIP": {
+	 "subnetExtRef": {
             "type": "string"
         },
+		"privateIPInt": {
+            "type": "string"
+        },
+		"privateIPExt": {
+            "type": "string"
+        },    
 		"loadBalancerName": {
             "type": "string"
         },
@@ -16,13 +22,19 @@
         }
     },
     "variables": {
-        "lbFrontendName": "IntloadBalancerFrontEnd",
-        "lbBackendName": "IntloadBalancerBackEnd",
-        "probeName": "Probe-Proxy-On-3128",
+        "lbIntFrontendName": "IntloadBalancerFrontEnd",
+        "lbIntBackendName": "IntloadBalancerBackEnd",
+	"lbExtFrontendName": "ExtloadBalancerFrontEnd",
+        "lbExtBackendName": "ExtloadBalancerBackEnd",
+        "IntprobeName": "Int-Probe-Proxy-On-3128",
+	"ExtprobeName": "Ext-Probe-Proxy-On-3128",
         "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerName'))]",
-        "lbFrontendID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbFrontendName'))]",
-        "lbBackendID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbBackendName'))]",
-        "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('probeName'))]"     
+        "lbIntFrontendID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbIntFrontendName'))]",
+        "lbIntBackendID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbIntBackendName'))]",
+        "lbIntProbeID": "[concat(variables('lbID'),'/probes/',variables('IntprobeName'))]"
+	"lbExtFrontendID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbExtFrontendName'))]",
+        "lbExtBackendID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbExtBackendName'))]",
+        "lbExtProbeID": "[concat(variables('lbID'),'/probes/',variables('ExtprobeName'))]" 
     },
     "resources": [
         {
@@ -37,19 +49,32 @@
             "properties": {
                 "frontendIPConfigurations": [
                     {
-                        "name": "[variables('lbFrontendName')]",
+                        "name": "[variables('lbIntFrontendName')]",
                         "properties": {
                             "subnet": {
-							"id": "[parameters('subnetRef')]"
+							"id": "[parameters('subnetIntRef')]"
 							},
-							"privateIPAddress": "[parameters('privateIP')]",
+							"privateIPAddress": "[parameters('privateIPInt')]",
 							"privateIPAllocationMethod": "Static"
                         }
-                    }
+                    },
+			{
+			"name": "[variables('lbExtFrontendName')]",
+			"properties": {
+			    "subnet": {
+							"id": "[parameters('subnetExtRef')]"
+							},
+							"privateIPAddress": "[parameters('privateIPExt')]",
+							"privateIPAllocationMethod": "Static"
+			}
+		    }
                 ],
                 "backendAddressPools": [
                     {
-                        "name": "[variables('lbBackendName')]"
+                        "name": "[variables('lbIntBackendName')]"
+                    },
+		    {
+                        "name": "[variables('lbExtBackendName')]"
                     }
                 ],
                 "loadBalancingRules": [
@@ -57,7 +82,7 @@
                         "name": "AnyTCPUDP",
                         "properties": {
                             "frontendIPConfiguration": {
-                                "id": "[variables('lbFrontendID')]"
+                                "id": "[variables('lbIntFrontendID')]"
                             },
                             "frontendPort": 0,
                             "backendPort": 0,
@@ -66,10 +91,30 @@
                             "protocol": "All",
                             "loadDistribution": "SourceIP",
                             "backendAddressPool": {
-                                "id": "[variables('lbBackendID')]"
+                                "id": "[variables('lbIntBackendID')]"
                             },
                             "probe": {
-                                "id": "[variables('lbProbeID')]"
+                                "id": "[variables('lbIntProbeID')]"
+                            }
+                        }
+                    },
+			{
+                        "name": "AnyTCPUDP",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbExtFrontendID')]"
+                            },
+                            "frontendPort": 0,
+                            "backendPort": 0,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "All",
+                            "loadDistribution": "SourceIP",
+                            "backendAddressPool": {
+                                "id": "[variables('lbExtBackendID')]"
+                            },
+                            "probe": {
+                                "id": "[variables('lbExtProbeID')]"
                             }
                         }
                     }
@@ -93,12 +138,20 @@
             "value": "[variables('lbID')]",
             "type": "string"
         },
-        "lbFrontendID": {
-            "value": "[variables('lbFrontendID')]",
+        "lbIntFrontendID": {
+            "value": "[variables('lbIntFrontendID')]",
             "type": "string"
         },
-        "lbBackendID": {
-            "value": "[variables('lbBackendID')]",
+        "lbIntBackendID": {
+            "value": "[variables('lIntbBackendID')]",
+            "type": "string"
+        },
+	    "lbExtFrontendID": {
+            "value": "[variables('lbExtFrontendID')]",
+            "type": "string"
+        },
+        "lbExtBackendID": {
+            "value": "[variables('lbExtBackendID')]",
             "type": "string"
         }
     }
