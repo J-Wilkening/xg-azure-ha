@@ -231,22 +231,6 @@
             "metadata": {
                 "description": "Number of XG Firewall instances to be deployed."
             }
-        },
-        "automationAccountNewOrExisting": {
-            "type": "string",
-            "allowedValues": [
-                "new",
-                "existing"
-            ],
-            "metadata": {
-                "description": "Create a new Azure Automation account or select an existing account to use for XG automation. WARNING: Automation account names are unique, so reusing an account name when creating a new account will overwirte the existing account!."
-            }
-        },
-        "automationAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Enter the name of the Azure Automation account you wish to use / create. Note that when creating a new account the account name must be between 6 to 50 characters, and can contain only letters, numbers, and hyphens."
-            }
         }
     },
     "variables": {
@@ -267,7 +251,6 @@
                 "deployments": "2017-08-01"
             }
         },
-        "accountTemplate": "[concat(parameters('baseUrl'),'/shared/AAAccountTemplate-', parameters('automationAccountNewOrExisting'),'.json')]",
         "lanNetwork": "[substring(parameters('lanPrefix'),0,sub(length(parameters('lanPrefix')), 1))]"
     },
     "resources": [
@@ -529,51 +512,6 @@
                     "interfaceRefLan": {
                         "value": "[reference(concat('SettingUpInterfaceLan', copyIndex()),'2015-01-01').outputs.interfaceRef.value]"
                     }
-                }
-            }
-        },
-        {
-            "name": "SettingUpAutomationAccount",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "incremental",
-                "templateLink": {
-                    "uri": "[variables('accountTemplate')]",
-                    "contentVersion": "1.0"
-                },
-                "parameters": {
-                    "accountName": {
-                        "value": "[parameters('automationAccountName')]"
-                    },
-                    "accountLocation": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "name": "[concat(parameters('automationAccountName'),'/RunbookJob',copyIndex())]",
-            "type": "Microsoft.Automation/automationAccounts/jobs",
-            "apiVersion": "2017-05-15-preview",
-            "copy": {
-                "name": "JobLoop",
-                "count": "[parameters('numberOfInstances')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', 'SettingUpAutomationAccount')]",
-                "[concat('Microsoft.Resources/deployments/', 'SettingUpVm', copyIndex())]"
-            ],
-            "properties": {
-                "runbook": {
-                    "name": "[reference('SettingUpAutomationAccount').outputs.runbookRef.value]"
-                },
-                "parameters": {
-                    "password": "[parameters('adminPassword')]",
-                    "portaip": "[reference(concat('SettingUpInterfaceLan', copyIndex()),'2015-01-01').outputs.privateIp.value]",
-                    "portagw": "[concat(variables('lanNetwork'),'1')]",
-                    "hostname": "[parameters('LoadbalancerExtIP')]",
-                    "sshport": "[copyIndex(2222)]"
                 }
             }
         }
